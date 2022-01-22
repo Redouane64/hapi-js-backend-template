@@ -1,0 +1,6 @@
+- name: Update Backend
+  hosts: all
+  gather_facts: True
+
+  roles:
+    - role: backend-update

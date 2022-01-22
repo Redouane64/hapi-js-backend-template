@@ -1,0 +1,89 @@
+{
+  "name": "hapi-starter-kit",
+  "version": "2.0.0",
+  "description": "",
+  "scripts": {
+    "clean": "rimraf ./build",
+    "build": "npm run clean && tsc",
+    "start": "node ./build/src/main.js",
+    "start:dev": "npm run build && concurrently -k \"tsc -w\" \"nodemon ./build/src/main.js\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint '{src,test}/**/*.ts' --quiet --fix",
+    "test": "jest",
+    "prepare": "husky install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/basic": "^6.0.0",
+    "@hapi/hapi": "^20.1.5",
+    "@hapi/inert": "^6.0.3",
+    "@hapi/nes": "^12.0.4",
+    "@hapi/vision": "^6.1.0",
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "hapi-auth-bearer-token": "^8.0.0",
+    "hapi-pino": "^8.3.0",
+    "hapi-pulse": "^3.0.0",
+    "hapi-swagger": "^14.2.4",
+    "jsonwebtoken": "^8.5.1",
+    "lab-transform-typescript": "^3.0.1",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.6.5",
+    "sequelize-typescript": "^2.1.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^13.1.0",
+    "@commitlint/config-conventional": "^13.1.0",
+    "@types/bcrypt": "^5.0.0",
+    "@types/hapi-auth-bearer-token": "^6.1.3",
+    "@types/hapi-pino": "^8.0.2",
+    "@types/hapi__basic": "^5.1.2",
+    "@types/hapi__hapi": "^20.0.9",
+    "@types/hapi__inert": "^5.2.3",
+    "@types/hapi__nes": "^11.0.5",
+    "@types/hapi__vision": "^5.5.3",
+    "@types/jest": "^27.0.1",
+    "@types/jsonwebtoken": "^8.5.5",
+    "@types/node": "^16.6.1",
+    "@types/uuid": "^8.3.1",
+    "@types/validator": "^13.6.3",
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.1",
+    "concurrently": "^6.2.1",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-jest": "^24.4.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "husky": "^7.0.1",
+    "jest": "^27.1.0",
+    "jest-extended": "^0.11.5",
+    "lint-staged": "^11.1.2",
+    "nodemon": "^2.0.12",
+    "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
+    "sequelize-cli": "^6.2.0",
+    "sqlite3": "^5.0.2",
+    "ts-jest": "^27.0.5",
+    "ts-node": "^10.2.0",
+    "typescript": "^4.3.5"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "setupFilesAfterEnv": [
+      "jest-extended"
+    ]
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix"
+    ],
+    "*.js": "eslint --cache --fix"
+  }
+}

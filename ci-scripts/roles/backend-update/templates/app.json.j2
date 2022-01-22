@@ -1,0 +1,12 @@
+{
+  "apps": [
+      {
+          "name": "{{ PROCESS_NAME }}",
+          "script": "./build/main.js",          
+          "autorestart": true,
+          "env": {
+              "ENV": "prod"              
+          }
+      }
+  ]
+}

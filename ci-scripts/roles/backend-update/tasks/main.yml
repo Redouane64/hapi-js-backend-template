@@ -1,0 +1,107 @@
+---
+# default tasks
+
+# Run test tasks
+- name: Delete old test dir
+  file:
+    path: '{{ backend_test_dir }}'
+    state: absent 
+
+- name: Create test directory
+  file:
+    path: '{{ backend_test_dir }}'
+    state: directory
+    recurse: yes
+
+- name: Upload autotest files
+  synchronize:
+    src: '{{ SRC_DIR }}'
+    dest: '{{ backend_test_dir }}'    
+  register: copyfiles
+
+- name: Install "typescript" node.js package globally.
+  npm:
+    name: typescript
+    global: yes
+  become: yes
+
+- name: Install packages based on package.json
+  npm:
+    path: '{{ backend_test_dir }}'
+    state: present
+
+- name: Compile code
+  shell: npm run build
+  args:
+    chdir: '{{ backend_test_dir }}'
+
+- name: Copy or generate env file
+  template:
+    src: ./{{ backend_env }}.j2
+    dest: '{{ backend_test_dir }}/{{ backend_env }}'    
+
+- name: Copy or generate database.json file
+  template:
+    src: ./{{ backend_database_json }}.j2
+    dest: '{{ backend_test_dir }}/sequelize/{{ backend_database_json }}' 
+
+- name: Copy or generate app.json file
+  template:
+    src: ./{{ backend_app_json }}.j2
+    dest: '{{ backend_test_dir }}/{{ backend_app_json }}'
+
+- name: Migrate Database
+  shell: npx sequelize-cli db:migrate
+  args:
+    chdir: '{{ backend_test_dir }}'
+  ignore_errors: yes
+
+- name: Seed Database
+  shell: npx sequelize-cli db:seed:all
+  args:
+    chdir: '{{ backend_test_dir }}'
+  ignore_errors: yes
+
+- name: Run tests
+  shell: npm run test
+  args:
+    chdir: '{{ backend_test_dir }}'
+
+# copy test artifacts to source directory
+- name: Stop service process
+  shell: pm2 stop {{ backend_bin }}/app.json
+  ignore_errors: yes
+
+- name: Delete backend dir
+  file:
+    path: '{{ backend_bin }}'
+    state: absent    
+
+- name: Create backend dir
+  file:
+    path: '{{ backend_bin }}'
+    state: directory
+    recurse: yes
+
+- name: Upload backend files
+  copy:
+    src: '{{ backend_test_dir }}/'
+    dest: '{{ backend_bin }}/' 
+    remote_src: yes
+    mode: '0777'
+
+- name: Delete dir for tests
+  file:
+    path: '{{ backend_test_dir }}'
+    state: absent
+
+- name: Start service process
+  shell: pm2 start app.json
+  args:
+    chdir: '{{ backend_bin }}'
+
+- name: Saving current process list
+  shell: pm2 save
+  args:
+    chdir: '{{ backend_bin }}'
+  

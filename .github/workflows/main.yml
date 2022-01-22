@@ -1,0 +1,66 @@
+name: Node-CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, '[update]')"
+
+    steps:
+      - name: Copy code files to container
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Run build task
+        run: npm run build
+
+  deploy:
+
+    runs-on: ubuntu-18.04
+    needs: [build]
+
+    steps:
+      - name: Copy code files to container
+        uses: actions/checkout@v2
+
+      - name: Environment preparation
+        run: |
+          mkdir -p ~/.ssh/
+          touch ~/.ssh/id_rsa
+          chmod -R go= ~/.ssh
+          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.SERVER_SSH_KEY }}" >> ~/.ssh/id_rsa
+          sudo apt-add-repository -y -u ppa:ansible/ansible
+          sudo apt-get install -y rsync
+          sudo apt-get install -y ansible
+
+      - name: Deploy to Server
+        run: |
+          chmod 700 ci-scripts
+          cd ci-scripts
+          ansible-playbook -i "${{ secrets.REMOTE_HOST }}" -e "ansible_user=${{ secrets.REMOTE_USER }} \
+            NODE_ENV=development \
+            HOST=${{ secrets.SERVER_HOST }} \
+            PORT=${{ secrets.SERVER_PORT } \
+            AUTH_JWT_SECRET=${{ secrets.JWT_ACCESS_SECRET }} \
+            AUTH_JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }} \
+            AUTH_JWT_LIFETIME=86400 \
+            AUTH_JWT_REFRESH_LIFETIME=604800 \
+            DATABASE_HOST=${{ secrets.DATABASE_HOST }} \
+            DATABASE_PORT=${{ secrets.DATABASE_PORT }} \
+            DATABASE_NAME=${{ secrets.DATABASE_NAME }} \
+            DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }} \
+            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
+            SRC_DIR=${{ github.workspace }}/" backend-update.yml;
+

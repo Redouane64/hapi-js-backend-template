@@ -1,0 +1,7 @@
+---
+# defaults file for decimal-atomic-swap-service-update
+backend_bin_mode: '0640'
+backend_env: .env
+backend_app_json: app.json
+backend_database_json: config.json
+backend_test_dir: '/home/centos/backend-autotests'
