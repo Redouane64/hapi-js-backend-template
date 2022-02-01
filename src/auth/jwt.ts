@@ -24,7 +24,7 @@ export const validateToken = async (request: Request, token: string, h: Response
     return { isValid, credentials: user, artifacts: user }
   }
 
-  return { isValid: true, credentials: {}, artifacts: undefined }
+  return { isValid: false, credentials: {}, artifacts: undefined }
 }
 
 export type TokenOptions = {
@@ -44,7 +44,7 @@ export const validateRefreshToken = async (request: Request, token: string, h: R
     return { isValid, credentials: user, artifacts: user }
   }
 
-  return { isValid: true, credentials: {}, artifacts: undefined }
+  return { isValid: false, credentials: {}, artifacts: undefined }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
